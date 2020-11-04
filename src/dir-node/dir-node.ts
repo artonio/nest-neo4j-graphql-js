@@ -5,7 +5,7 @@ import {Directive, Field, ID, ObjectType} from "@nestjs/graphql"
 export class DirNode {
 
     @Field((type) => ID)
-    declare id: number
+    declare id: string
 
     @Field()
     declare dirName: string;
@@ -17,5 +17,5 @@ export class DirNode {
     @Directive('@relation(name: "parent", direction: "IN")')
     @Directive('@cypher(statement:"MATCH (this)-->(parent) RETURN parent")')
     @Field(() => DirNode, { nullable: true })
-    declare parent?: DirNode
+    declare parent?: DirNode;
 }

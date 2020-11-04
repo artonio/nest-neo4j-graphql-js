@@ -1,7 +1,7 @@
 import {buildFederatedSchema} from '@apollo/federation'
 import {Injectable, Logger} from '@nestjs/common'
 import {GraphQLSchemaModule} from 'apollo-graphql'
-import {GraphQLSchema} from 'graphql'
+import {GraphQLSchema, printSchema} from 'graphql'
 import {makeAugmentedSchema} from 'neo4j-graphql-js'
 import {extractResolversFromSchema} from 'neo4j-graphql-js/dist/augment/resolvers'
 import {SchemaPrinter} from './schema-printer'
@@ -21,10 +21,11 @@ export class Neo4jSchemaService {
     })
 
     const resolvers = extractResolversFromSchema(schema)
+    Logger.log(resolvers, 'Neo4jSchemaService');
 
     // Our user defined schema
     // printSchema(schema) from 'graphql' removes our NestJs Custom Directives
-    // const typeDefs: string = printSchema(schema)
+    // const typeDefs0: string = printSchema(schema)
     const typeDefs: string = schemaPrinter.printSchemaWithDirectives(schema)
 
     Logger.log(typeDefs, 'Neo4jSchemaService');

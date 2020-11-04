@@ -11,6 +11,8 @@ import {
   astFromValue,
   print,
 } from 'graphql'
+import {Logger} from "@nestjs/common"
+import {DirectiveNode} from "graphql/language/ast"
 
 export interface ISchemaPrinterConfig {
   excludeScalar?: boolean
@@ -182,8 +184,13 @@ export class SchemaPrinter {
     const mappedFields: any = []
 
     fields.forEach((f) => {
+      // Logger.log(print(f.astNode), 'printFields')
+      // Logger.log(`  ${f.name}${this.printArgs(f)}: ${f.type}`, 'printFields')
       if (f.astNode) {
-        mappedFields.push(`  ${print(f.astNode)}`)
+        const directives = this.printDirectives(f.astNode.directives);
+        Logger.log(this.printDirectives(f.astNode.directives), 'printFields')
+        // mappedFields.push(`  ${print(f.astNode)}`)
+        mappedFields.push(`  ${f.name}${this.printArgs(f)}: ${f.type} ${this.printDirectives(f.astNode.directives)}`)
       } else {
         mappedFields.push(`  ${f.name}${this.printArgs(f)}: ${f.type}`)
       }
@@ -223,4 +230,20 @@ export class SchemaPrinter {
 
     return argDecl
   }
+
+  private printDirectives(directives: ReadonlyArray<DirectiveNode>): string {
+    const res = [];
+    directives.forEach(dir => {
+      const name = dir.name.value,
+          args = dir.arguments;
+      const argString = args.map(arg => {
+        if (arg.value.kind === 'StringValue') {
+          return `${arg.name.value}: "${arg.value.value}"`;
+        }
+      }).join(', ');
+      res.push(`@${name}(${argString})`)
+    })
+    return res.join(' ');
+  }
+
 }
