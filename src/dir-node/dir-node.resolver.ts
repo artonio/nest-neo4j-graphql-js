@@ -48,9 +48,11 @@ export class DirNodeResolver {
     @Mutation(() => DirNode, {name: 'CreateSeedData'})
     // @Directive(`@cypher(statement:"CREATE (n:DirNode {id: 1, dirName: 'Root123'}) RETURN n")`)
     @Directive(`@cypher(statement:"UNWIND $data as dirNode CREATE (n:DirNode {id: dirNode.id, dirName: dirNode.dirName}) RETURN n")`)
-    async seedData(@Args('data') data: DirNodeInput, @Context() context, @Info() resolveInfo) {
+    async seedData(@Args('input') input: DirNodeInput, @Context() context, @Info() resolveInfo) {
         const object = null
-        this.logger.log(JSON.stringify(data));
-        return await neo4jgraphql(object, {data}, context, resolveInfo);
+        const dirNode = new DirNode();
+        dirNode.id = 'ufo-123';
+        dirNode.dirName = input.dirName;
+        return await neo4jgraphql(object, {data: dirNode}, context, resolveInfo);
     }
 }
